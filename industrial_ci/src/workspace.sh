@@ -83,7 +83,7 @@ function ici_gpg_import {
 }
 
 function ici_setup_gpg_key {
-    case "$ROS_REPOSITORY_KEY}" in
+    case "$ROS_REPOSITORY_KEY" in
     *://*)
         ici_process_url "${ROS_REPOSITORY_KEY}" ici_gpg_import "$_ROS_KEYRING"
         ;;
@@ -118,6 +118,25 @@ function ici_init_apt {
     if 2>/dev/null apt-key adv -k C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654 | grep -q expired; then
         ici_warn "Expired ROS repository key found, installing new one"
         ici_retry 3 ici_cmd apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+    fi
+
+    if 2>/dev/null apt-key adv -k 4B63CF8FDE49746E98FA01DDAD19BAB3CBF125EA | grep -q expired; then
+        ici_warn "Expired ROS snapshots key found, installing new one"
+        ici_retry 3 ici_cmd apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key 4B63CF8FDE49746E98FA01DDAD19BAB3CBF125EA
+    fi
+
+    if [ -f /usr/share/keyrings/ros1-latest-archive-keyring.gpg ]; then
+        if 2>/dev/null ici_gpg /usr/share/keyrings/ros1-latest-archive-keyring.gpg -k | grep -q expired; then
+            ici_warn "Found legacy ROS1 keyring, replacing it"
+            ici_gpg_import /usr/share/keyrings/ros1-latest-archive-keyring.gpg < "$ROS_REPOSITORY_KEY"
+        fi
+    fi
+
+    if [ -f /usr/share/keyrings/ros2-snapshots-archive-keyring.gpg ]; then
+        if 2>/dev/null ici_gpg /usr/share/keyrings/ros2-snapshots-archive-keyring.gpg -k | grep -q expired; then
+            ici_warn "Found legacy ROS2 snapshot keyring, replacing it"
+            ici_gpg_import /usr/share/keyrings/ros2-snapshots-archive-keyring.gpg < "$ROS_REPOSITORY_KEY"
+        fi
     fi
 
     ici_cmd ici_asroot apt-get update -qq
