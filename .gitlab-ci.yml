@@ -47,7 +47,7 @@ noetic:
 humble:
   script: .industrial_ci/gitlab.sh
   variables:
-    TARGET_WORKSPACE: ". github:ros-controls/control_msgs#galactic-devel"
+    TARGET_WORKSPACE: ". github:ros-controls/control_msgs#humble"
     ROS_DISTRO: "humble"
     PRERELEASE: "true"
     CCACHE_DIR:
