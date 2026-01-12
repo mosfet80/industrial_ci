@@ -1,9 +1,7 @@
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.10)
 project(industrial_ci)
 
 if("$ENV{ROS_VERSION}" EQUAL "2")
-    cmake_policy(VERSION 3.5)
-
     find_package(ament_cmake REQUIRED)
     find_package(ament_cmake_python REQUIRED)
     ament_python_install_package(${PROJECT_NAME} PACKAGE_DIR python/${PROJECT_NAME})
